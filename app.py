@@ -1,17 +1,5 @@
-# =============================================================================
-# Huawei TX Intranet — Enterprise v12.5
-# (v12.4 + P0-1/P0-3/P1-backup/P1-A/P1-B/P1-C fixes)
-# =============================================================================
-# Critical changes:
-#   P0-1  Production guard: refuses start if URL_SID on or COOKIE_SECURE off
-#         (when HX_PRODUCTION=1)
-#   P0-3  Restore exports current audit log to CSV BEFORE restoring,
-#         and references that file in the post-restore meta-entry
-#   P1-bk Backup: microsecond+UUID filename, tmp file, integrity_check,
-#         atomic os.replace, prune supports old+new formats
-#   P1-A  Numeric comparison for measurements (75 vs 75.0 = same)
-#   P1-B  `id` added to INTERNAL_COLS (legacy safe)
-#   P1-C  Dashboard strips whitespace before matching "pending"
+
+# ========================================"
 # =============================================================================
 
 import streamlit as st
