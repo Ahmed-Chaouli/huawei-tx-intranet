@@ -147,10 +147,7 @@ Solution: The trial period has ended. Please contact the developer.
 Issue: "Invalid token" upon first launch.
 Solution: Ensure you enter `Mobilis2026` exactly as shown (it is case-sensitive).
 
-📞 Support
-Developer: Ahmed Chaouli
-Email: [chaouliaaa@gmail.com]
-Phone: [+213661680039]
+
 
 📝 Version History
 Version	Date	Changes
