@@ -1,0 +1,17 @@
+# Secrets & Environment
+.env
+.streamlit/secrets.toml
+
+# Database & Backups (IMPORTANT: never commit real data)
+*.db
+*.db-wal
+*.db-shm
+backups/
+logs/
+
+# Build artifacts
+dist/
+build/
+*.spec
+__pycache__/
+*.pyc
