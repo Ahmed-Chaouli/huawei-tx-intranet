@@ -1,4 +1,3 @@
-
 # =============================================================================
 
 import streamlit as st
@@ -592,8 +591,11 @@ def _revoke_session(token):
             conn.execute("DELETE FROM sessions WHERE token = ?", (token,))
     except Exception as e: logger.warning(f"revoke failed: {e}")
 
+
 def _validate_session(token):
-    if not token: return None
+    if not token:
+        return None
+
     try:
         with get_db() as conn:
             row = conn.execute("""
@@ -602,26 +604,51 @@ def _validate_session(token):
                 FROM sessions s JOIN users u ON s.username = u.username
                 WHERE s.token = ?
             """, (token,)).fetchone()
-        if not row: return None
+
+        if not row:
+            return None
+
         if row[7] is not None and int(row[7]) != int(row[3]):
-            _revoke_session(token); return None
+            _revoke_session(token)
+            return None
+
         now = datetime.now()
+        date_format = "%Y-%m-%d %H:%M:%S"
+
+        # Fail closed if the expiration timestamp is missing or invalid.
         try:
-            exp = datetime.strptime(row[6], "%Y-%m-%d %H:%M:%S")
-            if now > exp: _revoke_session(token); return None
-        except Exception: pass
+            exp = datetime.strptime(row[6], date_format)
+        except (TypeError, ValueError):
+            _revoke_session(token)
+            return None
+
+        if now >= exp:
+            _revoke_session(token)
+            return None
+
+        # Fail closed if the last-activity timestamp is missing or invalid.
         try:
-            last = datetime.strptime(row[5], "%Y-%m-%d %H:%M:%S")
-            if (now - last).total_seconds() > SESSION_TIMEOUT_MINUTES * 60:
-                _revoke_session(token); return None
-        except Exception: pass
+            last = datetime.strptime(row[5], date_format)
+        except (TypeError, ValueError):
+            _revoke_session(token)
+            return None
+
+        if (now - last).total_seconds() > SESSION_TIMEOUT_MINUTES * 60:
+            _revoke_session(token)
+            return None
+
         with get_db(immediate=True) as conn:
-            conn.execute("UPDATE sessions SET last_activity = ? WHERE token = ?",
-                        (now.strftime("%Y-%m-%d %H:%M:%S"), token))
+            conn.execute(
+                "UPDATE sessions SET last_activity = ? WHERE token = ?",
+                (now.strftime(date_format), token)
+            )
+
         return row
+
     except Exception as e:
         logger.warning(f"session validate failed: {e}")
         return None
+
 
 def _revoke_all_user_sessions(username, except_token=None):
     try:
